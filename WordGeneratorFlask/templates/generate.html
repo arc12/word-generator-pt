@@ -1,0 +1,34 @@
+{% extends "layout.html" %} 
+
+{% block content %}
+<h1>{{ title }}</h1>
+<p><strong>{{ instruction }}</strong></p>
+<div class="top-pad">
+    <form method="GET">
+        {% if menu is not none %}<input type="hidden" name="menu" value="{{ menu }}"/>{% endif %}
+        {% if tag is not none %}<input type="hidden" name="tag" value="{{ tag }}"/>{% endif %}
+        <div>
+            {% if models | length == 1 %}
+                <input type="hidden" name="model" value="{{ model }}" />
+            {% else %}
+                <label for="model">{{ langstrings.get('FORM_GENERATOR_LABEL') }}:</label>
+                <select id="model" name="model">
+                {% for _model in models %}
+                    <option value="{{ _model['code'] }}" {% if _model['code'] == model %} selected {% endif %}>{{ _model['label'] }}</option>
+                {% endfor %}
+                </select>
+            {% endif %}
+            <input type="text" name="prior" value="{{ prior }}" size="30" />
+        </div>
+        <div class="gap-2 mt-2">
+            <input type="submit" name="new_word" value="{{ langstrings.get('FORM_NEW_WORD') }}" class="btn btn-secondary"/>
+            <input type="submit" name="start_word" value="{{ langstrings.get('FORM_START_WORD') }}" class="btn btn-secondary"/>
+            <input type="submit" name="probabilities" value="{{ langstrings.get('FORM_PROBABILITIES') }}" class="btn btn-secondary"/>
+            <input type="submit" name="add_char" value="{{ langstrings.get('FORM_ADD_CHAR') }}" class="btn btn-secondary"/>
+        </div>
+    </form>
+    <div>
+        {{ info }}
+    </div>
+</div>
+{% endblock %}
