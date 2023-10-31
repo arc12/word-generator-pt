@@ -37,13 +37,6 @@ def validate():
 def questionnaire(specification_id: str):
     view_name = "generate"
 
-    if specification_id not in core.specification_ids:
-        msg = f"Request with invalid specification id = {specification_id} for plaything {PLAYTHING_NAME}"
-        logging.warn(msg)
-        abort(404, msg)        
-
-    core.record_activity(view_name, specification_id, session, referrer=request.referrer, tag=request.args.get("tag", None))
-    
     spec = core.get_specification(specification_id)
     langstrings = Langstrings(spec.lang)
 
@@ -87,6 +80,8 @@ def questionnaire(specification_id: str):
             prior = prior.title().replace("'S", "'s")  # Python thinks "Adam's" should be title-cased as "Adam'S"
         # else do nothing (should not occur unless someone plays with the URL)
 
+    core.record_activity(view_name, specification_id, session, referrer=request.referrer, tag=request.args.get("tag", None))
+
     # note special treatment for tag and menu querystring params. The menu URLs should contain these but NOT the generation form stuff
     menu_arg, tag_arg = None, None
     qs = []
@@ -112,17 +107,17 @@ def questionnaire(specification_id: str):
 def about(specification_id: str):
     view_name = "about"
 
-    core.record_activity(view_name, specification_id, session, referrer=request.referrer, tag=request.args.get("tag", None))
     spec = core.get_specification(specification_id)
+    langstrings = Langstrings(spec.lang)
+
     if "about" not in spec.asset_map:
         abort(404, "'about' is not configured")
 
-    langstrings = Langstrings(spec.lang)
+    core.record_activity(view_name, specification_id, session, referrer=request.referrer, tag=request.args.get("tag", None))
 
     return render_template("about.html",
                            about=spec.load_asset_markdown(view_name, render=True),
                            top_menu=spec.make_menu(menu, langstrings, plaything_root, view_name, query_string=request.query_string.decode()))
-
 
 app = prepare_app(Flask(__name__), url_prefix=plaything_root)
 app.register_blueprint(pt_bp, url_prefix=plaything_root)
