@@ -1,41 +1,3 @@
-from pg_shared import LangstringsBase, Core
-
-# Some central stuff which is used by both plain Flask and Dash views.
-
-PLAYTHING_NAME = "word-generator"
-
-class Langstrings(LangstringsBase):
-    langstrings = {
-        "MENU_ABOUT": {
-            "en": "About"
-        },
-        "MENU_GENERATE": {
-            "en": "Generate"
-        },
-        "FORM_GENERATOR_LABEL": {"en": "Generator"},
-        "FORM_NEW_WORD": {"en": "New Word"},
-        "FORM_START_WORD": {"en": "Start Word"},
-        "FORM_PROBABILITIES": {"en": "Get Probabilities"},
-        "FORM_ADD_CHAR": {"en": "Add Character"},
-        "NO_OPTION": {"en": "Ending of '{prior}' has no options in model."},  # NB formatting placeholder
-        "ADDED": {"en": "Added: '{c}'"},
-        "END": {"en": "[end]"}
-    }
-
-# The menu is only shown if menu=1 in query-string AND only for specific views. Generally make the menu contain all views it is coded for
-# Structure is view: LANGSTRING_KEY,
-# - where "view" is the part after the optional plaything_root (and before <specification_id> if present) in the URL. e.g. "about" is a view.
-# - and LANGSTRING_KEY is defined in the Langstrings class above
-# The ROOT for a plaything is the index cards page and should not be in the menu.
-# This defines the default order and the maximum scope of views in the meny. A plaything specification may override.
-menu = {
-    "generate": "MENU_GENERATE",
-    "about": "MENU_ABOUT"
-}
-
-# This sets up core features such as logger, activity recording, core-config.
-core = Core(PLAYTHING_NAME)
-
 # read from a file input text, where each line is taken separately and digested to create a set of probabilities for the letter which follows
 # a given substring. "Given substrings" include "start" and the following letter includes "end".
 # From these, new utterances are generated.
@@ -120,4 +82,3 @@ class WordGenerator:
         focus = self.occurrences[current_set]
         norm_factor = sum(focus["weights"])
         return {letter: round(100 * weight / norm_factor, round_to) for letter, weight in zip(focus["letters"], focus["weights"])}
-    
