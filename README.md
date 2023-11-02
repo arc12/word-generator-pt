@@ -1,17 +1,15 @@
 # Word Generator Plaything
 _This documents the configuration files which allow the Plaything to be customised and notes how they relate to various useage scenarios._
 
-## Plaything Specification
-The collection of configuration files is referred to a __specification__ for how the plaything should be realised. The starting point for the specification is a JSON file inside the plaything configuration folder. For the Attribute Issues Plaything, the folder path is Config/attribute-issues-pt. The __specification id__ is the file-name less the ".json" extension and this file is generically called the "specification core file".
+Plaything name: word-generator
 
-The specification core file contains the following elements which are common to all playthings:
-- enabled
-- title
-- summary
-- lang
-- detail = a container for plaything-specific specification
-- menu, for which the valid values are "about" and "questionnaire"
-- asset_map, for which the valid keys are "about" and "attributes"
+## Plaything Specification
+Refer to the README in the pg_shared repository/folder for common elements; this README refers only to the elements which are specific to the Attribute Issues Plaything.
+For the Word Generator Plaything, the Specifications folder is Config/word-generator.
+
+Available views:
+- "about" - available if there is an entry for "about" in the asset_map.
+- "generate"
 
 ### "detail"
 The structure of the "detail" container comprises:
@@ -21,9 +19,9 @@ The structure of the "detail" container comprises:
   - The structures take the form: {"code": "", "label": ""}. The __code__ is used internally and for logging and should not be changed once the plaything specification is in use. The __label__ is presented to users and may be changed without affecting the analysis of logged data (as it uses the code). If only one model is given then the user gets no choice and so the label is never shown.
 
 ### "asset_map"
-The "about" entry is optional but if present should name a Markdown file for use on the "about" page. The markdown file should contain entries for all of the __issue_categories__ given above. 
+The "about" entry is optional but if present should name a Markdown file for use on the "about" page. For this plaything, the "about" information is expected to be an explanation of the algorithm and user interactions. 
 
-There must be one entry for each of the __code__ values __models__; each should map to a "pickle" file created by the "Word Generator" Jupyter Notebook.
+There must also be one entry for each of the __code__ values __models__; each should map to a "pickle" file created by the "Word Generator" Jupyter Notebook.
 
 ## Possible Development Ideas
 Add a text entry box (optional) to solicit user comment (e.g. explain what they think the bias is) for logging.
