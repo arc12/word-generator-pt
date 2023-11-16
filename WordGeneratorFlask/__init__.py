@@ -33,7 +33,6 @@ def validate():
                            with_link=False)
 
 @pt_bp.route("/generate/<specification_id>", methods=['GET'])
-# view name = "questionnaire", the initial view
 def questionnaire(specification_id: str):
     view_name = "generate"
 
@@ -48,23 +47,28 @@ def questionnaire(specification_id: str):
     model = None
     prior = ""  # clean page load starts with no prior text
     info = ""
-    if "model" in request.args:
-        # we have some generation to do
-        model = request.args["model"]
+    action = None
+    model = request.args.get("model", None)
+    if model is not None:
+        # we have some generation to do        
         prior = request.args.get("prior", "")
         wg = spec.load_asset_object(model)  # WordGenerator object
         # which button was pressed?
         if "new_word" in request.args:
+            action = "new"
             prior = wg.generate_word()
         elif "start_word" in request.args:
+            action = "start"
             prior = wg.generate_start()
         elif "probabilities" in request.args:
+            action = "probs"
             probs = wg.get_options(prior)
             if probs is None:
                 info = langstrings.get("NO_OPTION").format(prior=prior)
             else:
                 info = ', '.join([(langstrings.get("END") if c == "^" else f"'{c}'") + f": {pc}%" for c, pc in probs.items()])  # TODO? alternatively add a separate parameter to the template and format there.
         elif "add_char" in request.args:
+            action = "add"
             new_prior = wg.generate_character(prior, append=True)
             if new_prior is None:
                 info = langstrings.get("NO_OPTION").format(prior=prior)
@@ -80,7 +84,9 @@ def questionnaire(specification_id: str):
             prior = prior.title().replace("'S", "'s")  # Python thinks "Adam's" should be title-cased as "Adam'S"
         # else do nothing (should not occur unless someone plays with the URL)
 
-    core.record_activity(view_name, specification_id, session, referrer=request.referrer, tag=request.args.get("tag", None))
+    core.record_activity(view_name, specification_id, session, referrer=request.referrer,
+                         activity={"model": model, "action": action},
+                         tag=request.args.get("tag", None))
 
     # note special treatment for tag and menu querystring params. The menu URLs should contain these but NOT the generation form stuff
     menu_arg, tag_arg = None, None
