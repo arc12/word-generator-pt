@@ -32,6 +32,10 @@ def validate():
                            specifications=core.get_specifications(include_disabled=True, check_assets=which_assets, check_optional_assets=["about"]),
                            with_link=False)
 
+@pt_bp.route("/ping")
+def ping():
+    return "OK"
+
 @pt_bp.route("/generate/<specification_id>", methods=['GET'])
 def questionnaire(specification_id: str):
     view_name = "generate"
